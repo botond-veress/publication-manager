@@ -1,12 +1,12 @@
-import createEpub from 'epubjs';
+import { Book } from 'epubjs';
 import { Publication, getTOCItemsFromBook } from '@botondveress/publication-core';
 
 import { getMetadata } from './metadata';
-import { getCoverImageBase64 } from './cover';
+import { getCoverImageBase64 } from './cover-image';
 import { getContentFromBook } from './content';
 
 const parsePublication = async (url: string): Promise<Publication> => {
-  const book = createEpub(url);
+  const book = new Book(url);
 
   await book.ready;
 

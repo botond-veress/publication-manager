@@ -1,13 +1,8 @@
 import { Book, NavItem } from 'epubjs';
+import { join } from 'path-browserify';
 
 import { getBasePathFromBook } from './base-path';
 import { PublicationTOCItem } from './types';
-
-const normalizeHref = (href: string) => {
-  if (href.startsWith('..')) href = href.substring(2);
-  if (href.startsWith('/')) href = href.substring(1);
-  return href;
-};
 
 const getSpineComponentFromHref = (href: string) => href.split('#')[0];
 const getPositonComponentFromHref = (href: string) => href.split('#')[1];
@@ -17,11 +12,10 @@ const getTOCItemFromBook = async (book: Book, item: NavItem): Promise<Publicatio
 
   const directory = getBasePathFromBook(book);
 
-  const normalizedHref = normalizeHref(item.href);
-  const spineComponent = getSpineComponentFromHref(normalizedHref);
-  const positonComponent = getPositonComponentFromHref(normalizedHref);
+  const spineComponent = getSpineComponentFromHref(item.href);
+  const positonComponent = getPositonComponentFromHref(item.href);
 
-  const href = [directory, spineComponent].filter(Boolean).join('/');
+  const href = join(directory, spineComponent);
 
   const spineItem = book.spine.get(href);
 

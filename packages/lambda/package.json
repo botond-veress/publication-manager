@@ -1,0 +1,12 @@
+{
+  "name": "@botondveress/lambda",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "types": "index",
+  "dependencies": {
+    "@botondveress/logger": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.93"
+  }
+}

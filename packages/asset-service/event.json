@@ -1,0 +1,26 @@
+{
+  "version": "0",
+  "id": "2dac43b0-11b4-e682-ecc8-c7bc85934e28",
+  "detail-type": "Object Created",
+  "source": "aws.s3",
+  "account": "409480220236",
+  "time": "2022-06-01T18:17:03Z",
+  "region": "eu-central-1",
+  "resources": ["arn:aws:s3:::parser-service-dev-assets"],
+  "detail": {
+    "version": "0",
+    "bucket": {
+      "name": "parser-service-dev-assets"
+    },
+    "object": {
+      "key": "metadata/16bccc65228d6061a75e8128e1448774.json",
+      "size": 5269,
+      "etag": "f8d69690c5c2d062448a0200d6715ae3",
+      "sequencer": "006297AD1FE16F5E65"
+    },
+    "request-id": "G8477CYBJNE0DH9Y",
+    "requester": "409480220236",
+    "source-ip-address": "52.59.229.126",
+    "reason": "PutObject"
+  }
+}

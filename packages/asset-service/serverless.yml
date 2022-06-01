@@ -1,0 +1,144 @@
+service: asset-service
+
+frameworkVersion: '3'
+useDotenv: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-iam-roles-per-function
+  - serverless-step-functions
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-central-1'}
+  memorySize: 1536
+  timeout: 25
+  stackTags:
+    Application: PublicationManagement
+    Environment: ${opt:stage, 'dev'}
+  environment:
+    LOG_LEVEL: ${env:LOG_LEVEL, 'info'}
+    VERSION: ${file(./package.json):version}
+    NODE_OPTIONS: --enable-source-maps
+  versionFunctions: false
+
+custom:
+  environment:
+    S3_BUCKET: ${env:S3_BUCKET}
+    S3_BUCKET_ARN: arn:aws:s3:::${self:custom.environment.S3_BUCKET}
+  webpack:
+    packager: 'yarn'
+    packagerOptions:
+      lockFile: '../../yarn.lock'
+    includeModules:
+      nodeModulesRelativeDir: '../../'
+
+package:
+  individually: true
+  excludeDevDependencies: true
+
+functions:
+  onPublishPublication:
+    handler: src/functions/on-publish-publication.handler
+    environment:
+      ALGOLIA_APP_ID: ${env:ALGOLIA_APP_ID}
+      ALGOLIA_ADMIN_API_KEY: ${env:ALGOLIA_ADMIN_API_KEY}
+      ALGOLIA_INDEX_PUBLICATION: ${env:ALGOLIA_INDEX_PUBLICATION}
+      ALGOLIA_INDEX_PUBLICATION_CONTENT: ${env:ALGOLIA_INDEX_PUBLICATION_CONTENT}
+      CONTENTFUL_WEBHOOK_BASIC_AUTH: ${env:CONTENTFUL_WEBHOOK_BASIC_AUTH}
+      CONTENTFUL_ACCESS_TOKEN: ${env:CONTENTFUL_ACCESS_TOKEN}
+      S3_BUCKET: ${self:custom.environment.S3_BUCKET}
+    iamRoleStatements:
+      - Effect: Allow
+        Action: [s3:GetObject]
+        Resource: ${self:custom.environment.S3_BUCKET_ARN}/*
+    events:
+      - httpApi:
+          path: /contentful/webhook/on-publish
+          method: post
+
+  extractCoverImage:
+    handler: src/functions/extract-cover-image.handler
+    environment:
+      S3_BUCKET: ${self:custom.environment.S3_BUCKET}
+    iamRoleStatements:
+      - Effect: Allow
+        Action: [s3:GetObject, s3:PutObject]
+        Resource: ${self:custom.environment.S3_BUCKET_ARN}/*
+
+  encryptPublication:
+    handler: src/functions/encrypt-publication.handler
+    environment:
+      S3_BUCKET: ${self:custom.environment.S3_BUCKET}
+      PUBLICATION_SECRET: ${env:PUBLICATION_SECRET}
+    iamRoleStatements:
+      - Effect: Allow
+        Action: [s3:GetObject, s3:PutObject]
+        Resource: ${self:custom.environment.S3_BUCKET_ARN}/*
+
+  upsertPublication:
+    handler: src/functions/upsert-publication.handler
+    environment:
+      CONTENTFUL_ACCESS_TOKEN: ${env:CONTENTFUL_ACCESS_TOKEN}
+    iamRoleStatements:
+      - Effect: Allow
+        Action: [s3:GetObject]
+        Resource: ${self:custom.environment.S3_BUCKET_ARN}/*
+
+stepFunctions:
+  stateMachines:
+    processPublicationStateMachine:
+      events:
+        - eventBridge:
+            event:
+              source: [aws.s3]
+              detail-type: [Object Created]
+              detail:
+                bucket:
+                  name:
+                    - ${self:custom.environment.S3_BUCKET}
+                object:
+                  key:
+                    - prefix: metadata/
+      name: asset-processor-${self:provider.stage}
+      definition:
+        Comment: It processes a publication dropped on S3 and creates an entry & assets in the CMS
+        StartAt: ProcessInParallel
+        States:
+          ProcessInParallel:
+            Type: Parallel
+            Next: UpsertPublication
+            Branches:
+              - StartAt: Pass
+                States:
+                  Pass:
+                    Type: Pass
+                    End: true
+              - StartAt: EncryptPublication
+                States:
+                  EncryptPublication:
+                    Type: Task
+                    Resource:
+                      Fn::GetAtt: [encryptPublication, Arn]
+                    End: true
+              - StartAt: ExtractCoverImage
+                States:
+                  ExtractCoverImage:
+                    Type: Task
+                    Resource:
+                      Fn::GetAtt: [extractCoverImage, Arn]
+                    End: true
+          UpsertPublication:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [upsertPublication, Arn]
+            Retry:
+              - ErrorEquals: [States.ALL]
+                IntervalSeconds: 3
+                MaxAttempts: 5
+                BackoffRate: 1.5
+            End: true
+  validate: true

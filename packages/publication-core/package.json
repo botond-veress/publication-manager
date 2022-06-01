@@ -1,0 +1,10 @@
+{
+  "name": "@botondveress/publication-core",
+  "version": "1.0.0",
+  "main": "src/index",
+  "types": "src/index",
+  "private": true,
+  "dependencies": {
+    "epubjs": "^0.3.93"
+  }
+}

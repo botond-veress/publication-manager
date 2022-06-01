@@ -1,0 +1,25 @@
+# Logs
+yarn-debug.log*
+yarn-error.log*
+
+# Dotenv files
+.env*
+!.env.example
+
+# Dependency directories
+node_modules/
+
+# Build artifacts
+.serverless
+.webpack/
+dist/
+
+# NPM
+.npmrc
+
+# Vercel
+.vercel
+
+# Misc
+.vscode/
+.DS_Store

@@ -1,0 +1,29 @@
+{
+  "name": "@botondveress/publication-manager",
+  "main": "index.js",
+  "author": {
+    "name": "Botond Veress",
+    "email": "botond.veress@gmail.com",
+    "url": "https://botondveress.com"
+  },
+  "private": true,
+  "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-typescript": "^7.15.8",
+    "@babel/register": "^7.15.3",
+    "@typescript-eslint/eslint-plugin": "^5.17.0",
+    "@typescript-eslint/parser": "^5.17.0",
+    "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
+    "lerna": "^4.0.0",
+    "prettier": "^2.6.1",
+    "typescript": "~4.6.3"
+  },
+  "workspaces": [
+    "packages/**/*"
+  ],
+  "engines": {
+    "node": "16"
+  }
+}

@@ -22,5 +22,5 @@ export interface Publication {
   tocs: PublicationTOCItem[];
   contents: PublicationContentItem[];
   metadata: PublicationMetadata;
-  coverImage: string;
+  coverImage?: string;
 }

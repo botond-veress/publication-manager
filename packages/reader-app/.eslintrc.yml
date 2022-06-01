@@ -1,0 +1,8 @@
+extends:
+  - '../../.eslintrc.yml'
+  - 'plugin:react/recommended'
+  - 'plugin:react-hooks/recommended'
+
+rules:
+  react/prop-types: off
+  react/display-name: off

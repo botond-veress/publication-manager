@@ -21,3 +21,13 @@ This is a lambda function that is triggered when EPUB files are uploaded to S3. 
 This service is triggered when publication metedata files are uploaded to S3. That will trigger a step function workflow that will process the cover image, encrypt the publication and create the entry and assets in Contentful. It also exposes a webhook that listens on Contentful changes and reindexes the publication for search in Algolia.
 
 [Learn more](packages/asset-service/README.md)
+
+## Reader Application
+
+This application is responsible for listing and searching the publications in Algolia. Publications can be opened in an e-reader.
+
+[Learn more](packages/reader-app/README.md)
+
+## Demo
+
+[See the demo](https://publication-reader-app.vercel.app/)

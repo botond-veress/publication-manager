@@ -1,0 +1,86 @@
+service: parser-service
+
+frameworkVersion: '3'
+useDotenv: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-iam-roles-per-function
+
+provider:
+  name: aws
+  # puppeteer libs don't support 16.x yet
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-central-1'}
+  memorySize: 1536
+  timeout: 300
+  stackTags:
+    Application: PublicationParser
+    Environment: ${opt:stage, 'dev'}
+  environment:
+    LOG_LEVEL: ${env:LOG_LEVEL, 'info'}
+    VERSION: ${file(./package.json):version}
+    NODE_OPTIONS: --enable-source-maps
+  versionFunctions: false
+
+custom:
+  S3_WEBSITE: !GetAtt AppBucket.WebsiteURL
+  webpack:
+    packager: yarn
+    packagerOptions:
+      lockFile: ../../yarn.lock
+    includeModules:
+      nodeModulesRelativeDir: ../../
+
+package:
+  individually: true
+  excludeDevDependencies: true
+
+functions:
+  processPublication:
+    handler: src/functions/process-publication.handler
+    environment:
+      PARSER_APP_URL: ${env:PARSER_APP_URL}
+      S3_BUCKET: !Ref AssetBucket
+    events:
+      - s3:
+          bucket: !Sub ${AWS::StackName}-assets
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: publications/
+            - suffix: .epub
+          existing: true
+          forceDeploy: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: [s3:GetObject, s3:PutObject]
+        Resource:
+          Fn::Join:
+            - '/'
+            - - Fn::GetAtt: [AssetBucket, Arn]
+              - '*'
+
+resources:
+  Resources:
+    AssetBucket:
+      Type: 'AWS::S3::Bucket'
+      Properties:
+        BucketName: !Sub ${AWS::StackName}-assets
+        AccessControl: Private
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        NotificationConfiguration:
+          EventBridgeConfiguration:
+            EventBridgeEnabled: true
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET]
+              AllowedOrigins:
+                - ${env:PARSER_APP_URL}
+              MaxAge: 3600

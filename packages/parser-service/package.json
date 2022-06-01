@@ -1,0 +1,38 @@
+{
+  "name": "@botondveress/parser-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "sls offline start",
+    "lint": "eslint --max-warnings 0 --ext .tsx --ext .ts src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.95.0",
+    "@aws-sdk/s3-request-presigner": "^3.95.0",
+    "@botondveress/lambda": "^1.0.0",
+    "@botondveress/logger": "^1.0.0",
+    "@botondveress/parser-types": "^1.0.0",
+    "@botondveress/publication-core": "^1.0.0",
+    "@botondveress/storage": "^1.0.0",
+    "chrome-aws-lambda": "^10.1.0",
+    "pino": "^7.9.2",
+    "pino-lambda": "^4.0.0",
+    "puppeteer-core": "^13.6.0",
+    "slugify": "^1.6.5"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.89",
+    "@types/node": "^17.0.8",
+    "babel-loader": "^8.2.5",
+    "pino-pretty": "^7.4.0",
+    "puppeteer": "^13.6.0",
+    "serverless": "^3.2.1",
+    "serverless-iam-roles-per-function": "^3.2.0",
+    "serverless-offline": "^8.4.0",
+    "serverless-webpack": "^5.7.0",
+    "webpack": "^5.72.0",
+    "webpack-node-externals": "^3.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@botondveress/storage",
+  "version": "1.0.0",
+  "peerDepdencies": {
+    "@aws-sdk/client-s3": "^3.95.0",
+    "@aws-sdk/s3-request-presigner": "^3.95.0",
+    "@botondveress/logger": "^1.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/lib-storage": "^3.100.0",
+    "@botondveress/logger": "^1.0.0"
+  }
+}

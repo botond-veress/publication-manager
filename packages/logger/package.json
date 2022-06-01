@@ -1,0 +1,8 @@
+{
+  "name": "@botondveress/logger",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "pino": "^7.9.2",
+    "pino-lambda": "^4.0.0"
+  }
+}

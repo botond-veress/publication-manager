@@ -4,6 +4,10 @@ _This is a demo application._
 
 The application retrieves all available publications indexed in Algolia. Publications can be searched by title or by content. EPUB.js is used to read publications.
 
+## Demo
+
+[See the demo](https://publication-reader-app.vercel.app/)
+
 ## Setup
 
 Create an .env.dev file:

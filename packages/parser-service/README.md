@@ -4,14 +4,14 @@ _This is a demo service._
 
 The parser service is responsible of processing the publication and extracting relevant metadata from it. The metadata is then uploaded to S3, that will trigger other services.
 
-EPUB.js cannot be run in node.js environment, so it will use Puppeteer to run the function in the browser (through the Parser [Parser Application](packages/parser-app/README.md)).
+EPUB.js cannot be run in node.js environment, so it will use Puppeteer to run the function in the browser (through the Parser [Parser Application](packages/parser-app)).
 
 ## Architecture
 
 ![Parser Service architecture](docs/diagram.jpg?raw=true 'Parser Service architecture')
 
 1. Publication is uploaded to S3.
-1. S3 triggers a Lambda function, that runs Puppeteer and connects to the [Parser Application](packages/parser-app/README.md).
+1. S3 triggers a Lambda function, that runs Puppeteer and connects to the [Parser Application](packages/parser-app).
 1. Once the publication has been parsed, the metadata file is uploaded to S3.
 
 ## Setup
